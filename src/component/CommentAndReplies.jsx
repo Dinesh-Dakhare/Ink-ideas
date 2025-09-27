@@ -1,0 +1,172 @@
+import React from 'react'
+import { Share, MessageCircle, Heart, Bookmark, Twitter, Linkedin, Facebook, Clock, Calendar, User,ArrowLeft } from 'lucide-react';
+
+const CommentAndReplies = ({comments, comment, setComment, handleCommentSubmit,replyingTo}) => {
+  return (
+    <>
+    <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+                <MessageCircle className="w-6 h-6" />
+                <span>Comments ({comments.length})</span>
+              </h3>
+              
+              {/* New Comment Form */}
+              <div className="mb-8">
+                <div className="flex space-x-3">
+                  <img
+                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop&crop=face"
+                    alt="Your avatar"
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <textarea
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder="Write a comment..."
+                      className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      rows={4}
+                    />
+                    <div className="flex justify-end mt-3">
+                      <button
+                        onClick={handleCommentSubmit}
+                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!comment.trim()}
+                      >
+                        Post Comment
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Comments List */}
+              <div className="space-y-6">
+                {comments.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p>Be the first to comment on this post!</p>
+                  </div>
+                ) : (
+                  comments.map((comment) => (
+                    <div key={comment.id} className="border-b border-gray-100 pb-6 last:border-b-0">
+                      {/* Main Comment */}
+                      <div className="flex space-x-3">
+                        <img
+                          src={comment.author.avatar}
+                          alt={comment.author.name}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <div className="bg-gray-50 rounded-lg p-4">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="font-medium text-gray-900">{comment.author.name}</span>
+                              <span className="text-sm text-gray-500">•</span>
+                              <span className="text-sm text-gray-500">{comment.timestamp}</span>
+                            </div>
+                            <p className="text-gray-700">{comment.content}</p>
+                          </div>
+                          
+                          {/* Comment Actions */}
+                          <div className="flex items-center space-x-4 mt-2 ml-4">
+                            <button
+                              onClick={() => handleLikeComment(comment.id)}
+                              className={`flex items-center space-x-1 text-sm transition-colors ${
+                                comment.isLiked ? 'text-red-600' : 'text-gray-500 hover:text-red-600'
+                              }`}
+                            >
+                              <Heart className={`w-4 h-4 ${comment.isLiked ? 'fill-current' : ''}`} />
+                              <span>{comment.likes}</span>
+                            </button>
+                            <button
+                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                              className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
+                            >
+                              Reply
+                            </button>
+                          </div>
+
+                          {/* Reply Form */}
+                          {replyingTo === comment.id && (
+                            <div className="mt-4 ml-4">
+                              <div className="flex space-x-3">
+                                <img
+                                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop&crop=face"
+                                  alt="Your avatar"
+                                  className="w-8 h-8 rounded-full object-cover"
+                                />
+                                <div className="flex-1">
+                                  <textarea
+                                    value={replyText}
+                                    onChange={(e) => setReplyText(e.target.value)}
+                                    placeholder={`Reply to ${comment.author.name}...`}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+                                    rows={3}
+                                  />
+                                  <div className="flex justify-end space-x-2 mt-2">
+                                    <button
+                                      onClick={() => {
+                                        setReplyingTo(null);
+                                        setReplyText('');
+                                      }}
+                                      className="px-4 py-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      onClick={() => handleReplySubmit(comment.id)}
+                                      className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      disabled={!replyText.trim()}
+                                    >
+                                      Reply
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Replies */}
+                          {comment.replies && comment.replies.length > 0 && (
+                            <div className="mt-4 ml-4 space-y-4">
+                              {comment.replies.map((reply) => (
+                                <div key={reply.id} className="flex space-x-3">
+                                  <img
+                                    src={reply.author.avatar}
+                                    alt={reply.author.name}
+                                    className="w-8 h-8 rounded-full object-cover"
+                                  />
+                                  <div className="flex-1">
+                                    <div className="bg-gray-50 rounded-lg p-3">
+                                      <div className="flex items-center space-x-2 mb-1">
+                                        <span className="font-medium text-gray-900 text-sm">{reply.author.name}</span>
+                                        <span className="text-xs text-gray-500">•</span>
+                                        <span className="text-xs text-gray-500">{reply.timestamp}</span>
+                                      </div>
+                                      <p className="text-gray-700 text-sm">{reply.content}</p>
+                                    </div>
+                                    <div className="flex items-center space-x-4 mt-1 ml-3">
+                                      <button
+                                        onClick={() => handleLikeComment(reply.id, true, comment.id)}
+                                        className={`flex items-center space-x-1 text-xs transition-colors ${
+                                          reply.isLiked ? 'text-red-600' : 'text-gray-500 hover:text-red-600'
+                                        }`}
+                                      >
+                                        <Heart className={`w-3 h-3 ${reply.isLiked ? 'fill-current' : ''}`} />
+                                        <span>{reply.likes}</span>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+    </>
+  )
+}
+
+export default CommentAndReplies

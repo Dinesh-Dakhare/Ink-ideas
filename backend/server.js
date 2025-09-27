@@ -1,0 +1,30 @@
+import express from 'express'
+import dotenv from 'dotenv'
+import cors from 'cors'
+import connectDb from './db/db.js'
+import blog from './routes/postRoute.js'
+import user from './routes/userRoute.js'
+
+
+dotenv.config()
+const app = express()
+app.use(cors( {
+  origin: 'http://localhost:5173',
+  credentials:true,
+}))
+connectDb()
+
+app.use(express.json())
+
+
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+
+app.use('/api/v1/blogs',blog)
+app.use('/api/v1/auth',user)
+
+const port = process.env.PORT || 3000
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})

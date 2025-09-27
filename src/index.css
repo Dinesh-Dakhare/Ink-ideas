@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+/* root.css or main.css */
+
+.main {
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Base editor */
+.tiptap {
+  @apply text-[16px] leading-relaxed text-gray-800;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Paragraphs */
+.tiptap p {
+  @apply my-2;
+}
+
+/* Headings */
+.tiptap h1 {
+  @apply text-3xl font-bold my-4 tracking-tight;
+}
+.tiptap h2 {
+  @apply text-2xl font-semibold my-3 tracking-tight;
+}
+.tiptap h3 {
+  @apply text-xl font-semibold my-2;
+}
+
+/* Lists */
+.tiptap ul {
+  @apply list-disc ml-6 my-2;
+}
+.tiptap ol {
+  @apply list-decimal ml-6 my-2;
+}
+.tiptap li {
+  @apply my-1;
+}
+
+/* Bold + Italic */
+.tiptap strong {
+  @apply font-semibold text-gray-900;
+}
+.tiptap em {
+  @apply italic text-gray-700;
+}
+
+/* Links */
+.tiptap a {
+  @apply text-blue-600 underline underline-offset-2;
+}
+.tiptap a:hover {
+  @apply text-blue-800;
+}
+
+/* Blockquote */
+.tiptap blockquote {
+  @apply border-l-4 border-gray-300 pl-4 italic text-gray-600 my-4;
+}
+
+/* Images */
+.tiptap img {
+  @apply max-w-full rounded-lg my-4 shadow-sm;
+}
+
+/* Selection highlight */
+.tiptap ::selection {
+  @apply bg-yellow-200;
+}
+
+/* Empty placeholder style */
+.tiptap.is-empty::before {
+  content: attr(data-placeholder);
+  @apply text-gray-400 italic;
+}
+
