@@ -14,6 +14,10 @@ import { getPosts } from "../services/postService.js";
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 const [page,setPage]=useState(1)
+const [currentPage,setCurrentPage]=useState(1)
+const [posts, setPosts] = useState([]);
+const [totalPosts, setTotalPosts] = useState(0);
+const [loading, setLoading] = useState(false);
   const recentPosts = [
     {
       id: 4,
@@ -90,22 +94,27 @@ const [page,setPage]=useState(1)
 
   const filteredPosts =
     selectedCategory === "All"
-      ? recentPosts
+      ? posts
       : recentPosts.filter((post) => post.category === selectedCategory);
 
 useEffect(() => {
   const fetchPosts = async () => {
     try {
       const res = await getPosts({page,limit:6})
-      console.log(res.data);
+
+      console.log(res);
+      setCurrentPage(res.currentPage)
+      setTotalPosts(res.totalPosts)
+      setPosts(res.posts);
+      setPage(res.totalPosts)
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
   };
 
   fetchPosts();
-}, []);
-
+}, [filteredPosts === posts.category]);
+if(!posts.length) return <div>Loading...</div>
   return (
     <div id="home" className="min-h-screen bg-gray-50">
       {/* Navigation Header */}
@@ -164,7 +173,7 @@ useEffect(() => {
 
           {/* Articles Grid */}
           <div id="articles" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {filteredPosts.map((post) => (
+            {posts?.map((post) => (
               <BlogCards post={post} key={post.id} />
             ))}
           </div>

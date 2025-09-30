@@ -21,7 +21,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<UserDashbord />} />
         <Route path="/notification" element={<Notification />} />
-        <Route path="/blog" element={<BlogPostDetail />} />
+        <Route path="/blog/:slug" element={<BlogPostDetail />} />
         <Route path="/all-blogs" element={<BlogListingPage />} />
 
 

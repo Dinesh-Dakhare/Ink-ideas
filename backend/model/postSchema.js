@@ -10,7 +10,7 @@ const postSchema = new mongoose.Schema(
     contentHTML: { type: String },
 
     coverImage: { type: String, default: "" },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+    category:{ type: String, required: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     tags: [{ type: String }],
     views: { type: Number, default: 0 },

@@ -19,7 +19,7 @@ const FeaturedPostsCarouse = () => {
       excerpt:
         "Discover the cutting-edge technologies and methodologies that are reshaping how we build web applications.",
       image:
-        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop",
+        "backend/uploads/1759203172779.jpg",
       category: "Web Development",
       author: "John Doe",
       date: "Jan 15, 2024",

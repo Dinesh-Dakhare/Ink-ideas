@@ -16,6 +16,7 @@ const navigate = useNavigate();
       const res = await api.post("/api/v1/auth/login", formData);
       console.log(res.data);
       if (res.status === 200) {
+        localStorage.setItem("token", res.data.token);
         alert("User logged in successfully");
         navigate("/home");
       }

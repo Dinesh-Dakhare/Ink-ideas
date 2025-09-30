@@ -1,12 +1,16 @@
 import React from 'react'
-import { Share, MessageCircle, Heart, Bookmark, Twitter, Linkedin, Facebook, Clock, Calendar, User,ArrowLeft } from 'lucide-react';
+import {  MessageCircle,  } from 'lucide-react';
+import api from '../services/api';
+import { set } from 'mongoose';
 
-const CommentAndReplies = ({comments, comment, setComment, handleCommentSubmit,replyingTo}) => {
+const CommentAndReplies = ({comments, comment, setComment, handleCommentSubmit,replyingTo,post,setComments}) => {
+
+  
   return (
     <>
     <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
                 <MessageCircle className="w-6 h-6" />
-                <span>Comments ({comments.length})</span>
+                {/* <span>Comments ({comments.length})</span> */}
               </h3>
               
               {/* New Comment Form */}
@@ -27,9 +31,10 @@ const CommentAndReplies = ({comments, comment, setComment, handleCommentSubmit,r
                     />
                     <div className="flex justify-end mt-3">
                       <button
-                        onClick={handleCommentSubmit}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!comment.trim()}
+                      onClick={()=>handleCommentSubmit(comment)}
+                       
+                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        // disabled={comment.trim() === ''}  
                       >
                         Post Comment
                       </button>
@@ -40,33 +45,34 @@ const CommentAndReplies = ({comments, comment, setComment, handleCommentSubmit,r
 
               {/* Comments List */}
               <div className="space-y-6">
+              
                 {comments.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
                     <p>Be the first to comment on this post!</p>
                   </div>
                 ) : (
-                  comments.map((comment) => (
-                    <div key={comment.id} className="border-b border-gray-100 pb-6 last:border-b-0">
+                  comments?.map((comment) => (
+                    <div key={comment._id} className="border-b border-gray-100 pb-6 last:border-b-0">
                       {/* Main Comment */}
                       <div className="flex space-x-3">
                         <img
-                          src={comment.author.avatar}
-                          alt={comment.author.name}
+                          src={comment?.author?.avatar}
+                          alt={comment?.author?.username}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                         <div className="flex-1">
                           <div className="bg-gray-50 rounded-lg p-4">
                             <div className="flex items-center space-x-2 mb-2">
-                              <span className="font-medium text-gray-900">{comment.author.name}</span>
+                              <span className="font-medium text-gray-900">{comment.author.username}</span>
                               <span className="text-sm text-gray-500">•</span>
-                              <span className="text-sm text-gray-500">{comment.timestamp}</span>
+                              <span className="text-sm text-gray-500">timestamp</span>
                             </div>
                             <p className="text-gray-700">{comment.content}</p>
                           </div>
                           
                           {/* Comment Actions */}
-                          <div className="flex items-center space-x-4 mt-2 ml-4">
+                          {/* <div className="flex items-center space-x-4 mt-2 ml-4">
                             <button
                               onClick={() => handleLikeComment(comment.id)}
                               className={`flex items-center space-x-1 text-sm transition-colors ${
@@ -82,10 +88,10 @@ const CommentAndReplies = ({comments, comment, setComment, handleCommentSubmit,r
                             >
                               Reply
                             </button>
-                          </div>
+                          </div> */}
 
                           {/* Reply Form */}
-                          {replyingTo === comment.id && (
+                          {/* {replyingTo === comment.id && (
                             <div className="mt-4 ml-4">
                               <div className="flex space-x-3">
                                 <img
@@ -122,10 +128,10 @@ const CommentAndReplies = ({comments, comment, setComment, handleCommentSubmit,r
                                 </div>
                               </div>
                             </div>
-                          )}
+                          )} */}
 
                           {/* Replies */}
-                          {comment.replies && comment.replies.length > 0 && (
+                          {/* {comment.replies && comment.replies.length > 0 && (
                             <div className="mt-4 ml-4 space-y-4">
                               {comment.replies.map((reply) => (
                                 <div key={reply.id} className="flex space-x-3">
@@ -158,13 +164,13 @@ const CommentAndReplies = ({comments, comment, setComment, handleCommentSubmit,r
                                 </div>
                               ))}
                             </div>
-                          )}
-                        </div>
+                          )} */}
+                       </div>
                       </div>
                     </div>
                   ))
                 )}
-              </div>
+              </div> 
     </>
   )
 }

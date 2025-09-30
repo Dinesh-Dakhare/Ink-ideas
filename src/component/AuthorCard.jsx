@@ -6,11 +6,11 @@ const AuthorCard = ({post}) => {
                 <div className="flex items-center space-x-4 mb-4">
                   <img
                     src={post.author.avatar}
-                    alt={post.author.name}
+                    alt={post.author.username}
                     className="w-16 h-16 rounded-full object-cover"
                   />
                   <div>
-                    <h4 className="font-semibold text-gray-900">{post.author.name}</h4>
+                    <h4 className="font-semibold text-gray-900">{post.author.username}</h4>
                     <p className="text-sm text-gray-600">{post.author.bio}</p>
                   </div>
                 </div>
