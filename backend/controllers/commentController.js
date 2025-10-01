@@ -11,7 +11,12 @@ export const createComment = async (req, res) => {
       content,
       replies: repliesId || null, // if provided, it's a reply
     });
-
+    // 2. If it's a normal comment (not a reply), push it to the post's comments
+    if (!repliesId) {
+      await postSchema.findByIdAndUpdate(postId, {
+        $push: { comments: comment._id },
+      });
+    }
     const populated = await comment.populate("author", "username avatar");
     res.status(201).json(populated);
   } catch (err) {

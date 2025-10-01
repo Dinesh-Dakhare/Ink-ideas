@@ -1,39 +1,39 @@
-import React,{ useState} from 'react'
-import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { useUser } from "../context/userContext.jsx";
 
 const Login = () => {
-      const [formData, setFormData] = useState({ email: "", password: "" });
-const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
+  const {login}=useUser()
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Login data:", formData);
     try {
       const res = await api.post("/api/v1/auth/login", formData);
       console.log(res.data);
       if (res.status === 200) {
-        localStorage.setItem("token", res.data.token);
+        // localStorage.setItem("token", res.data.token);
+        login(res.data.user,res.data.token);
         alert("User logged in successfully");
         navigate("/home");
       }
     } catch (error) {
       console.log(error);
-      
     }
   };
   return (
-   <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
         <h2 className="text-2xl font-bold text-gray-900 text-center">
           Welcome Back 👋
         </h2>
-        <p className="text-gray-500 text-center mb-6">
-          Login to your account
-        </p>
+        <p className="text-gray-500 text-center mb-6">Login to your account</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -74,13 +74,16 @@ const navigate = useNavigate();
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Don’t have an account?{" "}
-          <a href="/register" className="font-semibold text-blue-600 hover:underline">
+          <a
+            href="/register"
+            className="font-semibold text-blue-600 hover:underline"
+          >
             Register
           </a>
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

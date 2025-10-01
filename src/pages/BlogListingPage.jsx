@@ -1,11 +1,11 @@
 import React, { useState, useEffect, use } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { Eye, Heart, MessageCircle, Clock, Calendar, User } from "lucide-react";
 import Category from "../component/Category.jsx";
 import CategoryList from "../component/CategoryList";
 import { ArrowLeft } from "lucide-react";
 const BlogListingPage = () => {
-  const queryClient = useQueryClient();
+  
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [displayedBlogs, setDisplayedBlogs] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);

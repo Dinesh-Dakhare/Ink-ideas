@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FiEdit3,
@@ -12,11 +12,29 @@ import AnalyticsOverview from "../component/AnalyticsOverview";
 import Post from "../component/Post";
 import Setting from "../component/Setting";
 import DashboardCard from "../component/DashboardCard";
+import api from "../services/api.js";
 const UserDashbord = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [recentPosts, setRecentPosts] = useState([]);
+  const[postStats,setPostStats]= useState([])
+useEffect(()=>{
+const handleDashboard = async() => {
+  try {
+    const res = await api.get("/api/v1/dashboard");
+    console.log(res.data);
+    setRecentPosts(res.data.recentPosts);
+    setPostStats(res.data);
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+handleDashboard()
+},[])
 
-
-
+if(!postStats){
+  return <div>Loading...</div>
+}
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -25,7 +43,7 @@ const UserDashbord = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation Tabs */}
         <div className="flex space-x-1 mb-8">
-          {["overview", "posts", "analytics", "settings"].map((tab) => (
+          {["overview",  "settings"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -65,16 +83,16 @@ const UserDashbord = () => {
             </div>
 
             {/* Stats Grid */}
-            <DashboardCard />
+            <DashboardCard postStats={postStats}/>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Recent Posts */}
-              <RecentBlogs />
+              <RecentBlogs recentPosts={recentPosts} />
 
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Categories */}
-                <Categories />
+                <Categories postStats={postStats}/>
 
                 {/* Quick Actions */}
                 <QuickActions />
@@ -83,11 +101,7 @@ const UserDashbord = () => {
           </>
         )}
 
-        {/* Analytics Tab */}
-        {activeTab === "analytics" && <AnalyticsOverview />}
-
-        {/* Posts Tab */}
-        {activeTab === "posts" && <Post />}
+       
 
         {/* Settings Tab */}
         {activeTab === "settings" && <Setting />}

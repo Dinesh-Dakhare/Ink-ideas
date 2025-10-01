@@ -7,6 +7,7 @@ import user from './routes/userRoute.js'
 import path from "path";
 import img from './routes/uploadImg.js'
 import comment from './routes/commentRoute.js'
+import dashboard from './routes/dashboardRoute.js'
 
 const app = express()
 dotenv.config()
@@ -31,6 +32,7 @@ app.use('/api/v1/blogs',blog)
 app.use('/api/v1/auth',user)
 app.use('/api/v1/upload',img)
 app.use('/api/v1/comment',comment)
+app.use('/api/v1/dashboard',dashboard)
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {

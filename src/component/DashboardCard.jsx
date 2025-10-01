@@ -16,13 +16,14 @@ import {
   FiTrendingDown
 //   FiBarChart3
 } from 'react-icons/fi';
-const DashboardCard = () => {
+const DashboardCard = ({postStats}) => {
+  
     
       const stats = [
-        { label: 'Total Posts', value: '47', change: '+12%', icon: FiFileText },
-        { label: 'Total Views', value: '12.4K', change: '+18%', icon: FiEye },
-        { label: 'Followers', value: '892', change: '+7%', icon: FiUsers },
-        { label: 'Engagement', value: '4.2%', change: '+2.1%', icon: FiHeart }
+        { label: 'Total Posts', value: postStats?.totalPosts, change: '+12%', icon: FiFileText },
+        { label: 'Total Views', value: postStats?.totalViews, change: '+18%', icon: FiEye },
+        { label: 'Followers', value: '2', change: '+7%', icon: FiUsers },
+        { label: 'Engagement', value: postStats?.engagement, change: '+2.1%', icon: FiHeart }
       ];
     
   return (
