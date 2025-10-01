@@ -1,5 +1,5 @@
 import commentSchema from "../model/commentSchema.js";
-
+import postSchema from "../model/postSchema.js";
 // Create a comment or reply
 export const createComment = async (req, res) => {
   try {

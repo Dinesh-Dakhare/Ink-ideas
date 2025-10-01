@@ -32,7 +32,7 @@ const{user,logout}=useUser()
           user?.avatar?(
 
             <img
-              src={`backend/uploads/${user?.avatar}`} // Replace with user.avatar
+              src={`${user?.avatar}`} // Replace with user.avatar
               alt="User avatar"
               className="w-full h-full object-cover"
             />
