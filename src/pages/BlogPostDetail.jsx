@@ -17,6 +17,8 @@ import CommentAndReplies from "../component/CommentAndReplies";
 import AuthorCard from "../component/AuthorCard";
 import { NavLink, useLocation, useParams } from "react-router-dom";
 import api from "../services/api.js";
+import { set } from "mongoose";
+import formatDateToMonth from "../../backend/services/dataFormate.js";
 
 const BlogPostDetail = () => {
   const { slug } = useParams();
@@ -26,10 +28,16 @@ const BlogPostDetail = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [comment, setComment] = useState("");
-  const [newComment, setNewComment] = useState(""); // ✅ separate state
-  const [replyingTo, setReplyingTo] = useState(null);
+  const [reloadReplies, setReloadReplies] = useState(false);
+
   const [comments, setComments] = useState([]);
 
+  // comment pagenation
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+
+  const [totalComments, setTotalComments] = useState(0);
+  const [repliesId, setRepliesId] = useState(null);
   const [replyText, setReplyText] = useState("");
 
   // Mock data
@@ -83,38 +91,64 @@ const BlogPostDetail = () => {
     window.open(shareUrls[platform], "_blank", "width=600,height=400");
   };
 
-  const handleCommentSubmit = async (comment) => {
-    // if (!newComment.trim()) return;
+  const handleCommentSubmit = async (comment, repliesId) => {
+    if (!comment.trim()) return;
 
     try {
       const res = await api.post("/api/v1/comment", {
         postId: post._id,
         content: comment,
-        repliesId: null,
+        repliesId: repliesId || null,
       });
+
       if (res.status === 201) {
         console.log(res.data);
-        setComments(res.data); // ✅ just add new comment
-        setNewComment("");
-        setReplyingTo(null);
+        setReloadReplies(!reloadReplies);
+        setComment("");
+        setReplyText("");
+        setRepliesId(null);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(()=>{
- const loadComments = async () => {
+
+  const handleLikeComment = async(id) => {
+    try {
+      const response = await api.post(`/api/v1/comment/like/${id}`);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+      
+    }
+  };
+
+const handlePostLike = async () => {
+  try {
+    const response = await api.post(`/api/v1/blogs/like/${post._id}`);
+    console.log(response.data);
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+  useEffect(() => {
+    const loadComments = async () => {
       try {
-        const res = await api.get(`/api/v1/comment/${post._id}`);
-        setComments(res.data);
+        const res = await api.get(
+          `/api/v1/comment/${post._id}?page=${page}&limit=${limit}`
+        );
+        setComments(res.data.comments);
+        setTotalComments(res.data.totalPages);
+        setPage(res.data.currentPage);
         console.log(res.data);
-        
       } catch (err) {
         console.error("Failed to fetch comments", err);
       }
     };
     loadComments();
-  },[post])
+    setPage(1);
+  }, [post, reloadReplies, page]);
 
   return (
     <article className="min-h-screen bg-white">
@@ -153,7 +187,7 @@ const BlogPostDetail = () => {
               <span>•</span>
               <div className="flex items-center space-x-1">
                 <Calendar className="w-4 h-4" />
-                <span>{post.updatedAt}</span>
+                <span>{formatDateToMonth(post?.updatedAt)}</span>
               </div>
               <span>•</span>
               <div className="flex items-center space-x-1">
@@ -161,7 +195,7 @@ const BlogPostDetail = () => {
                 <span>{post?.readingTime}</span>
               </div>
             </div>
-            {/* <p className="text-sm text-gray-500 mt-1">{post.author.bio}</p> */}
+            <p className="text-sm text-gray-500 mt-1">{post.author.bio}</p>
           </div>
         </div>
 
@@ -196,7 +230,7 @@ const BlogPostDetail = () => {
             <div className="flex items-center justify-between border-t border-gray-200 pt-8 mt-12">
               <div className="flex items-center space-x-4">
                 <button
-                  onClick={() => setIsLiked(!isLiked)}
+                  onClick={() => handlePostLike(post._id)}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                     isLiked
                       ? "bg-red-50 text-red-600"
@@ -206,7 +240,7 @@ const BlogPostDetail = () => {
                   <Heart
                     className={`w-5 h-5 ${isLiked ? "fill-current" : ""}`}
                   />
-                  <span>{post.likes + (isLiked ? 1 : 0)}</span>
+                  <span>{post?.likes.length + (isLiked ? 1 : 0)}</span>
                 </button>
 
                 <button
@@ -255,7 +289,14 @@ const BlogPostDetail = () => {
                 setComments={setComments}
                 handleCommentSubmit={handleCommentSubmit}
                 post={post}
-                replyingTo={replyingTo}
+                page={page}
+                setPage={setPage}
+                totalComments={totalComments}
+                setRepliesId={setRepliesId}
+                handleLikeComment={handleLikeComment}
+                repliesId={repliesId}
+                replyText={replyText}
+                setReplyText={setReplyText}
               />
             </section>
           </main>

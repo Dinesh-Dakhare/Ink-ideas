@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPost, deletePost, getPostBySlug, getPosts, incrementViews, toggleLikePost, updatePost } from '../controllers/postController.js';
+import { createPost, deletePost, getPostBySlug, getPosts, incrementViews, postComment, toggleLikePost, updatePost } from '../controllers/postController.js';
 import { protect } from '../middleware/protect.js';
 
 const blog = express.Router();
@@ -13,6 +13,7 @@ blog.get("/", getPosts);
  blog.put("/:id", protect, updatePost);
  blog.delete("/:id", protect, deletePost);
 
+ blog.post('/like/:id',protect,postComment)
 // Post actions
  blog.patch("/:id/like", protect, toggleLikePost);
  blog.patch("/:id/view", incrementViews);

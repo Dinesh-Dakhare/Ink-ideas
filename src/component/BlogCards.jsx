@@ -77,7 +77,7 @@ const BlogCards = ({ post }) => {
             </NavLink>
             <div className="flex items-center">
               <FiHeart className="w-4 h-4 mr-1" />
-              {post.likes}
+              {post.likes.length}
             </div>
             <div className="flex items-center">
               <FiMessageCircle className="w-4 h-4 mr-1" />

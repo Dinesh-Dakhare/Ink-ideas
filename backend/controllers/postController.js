@@ -7,8 +7,10 @@ export const getPosts = async (req, res) => {
     console.log(category, search, page, limit);
 
     const query = {};
-    if (category) query.category = category;
+    if (category) query.category =  { $regex: new RegExp(`^${category}$`, "i")  };;
     if (search) query.title = { $regex: search, $options: "i" };
+
+console.log(query);
 
     const posts = await postSchema
       .find(query)
@@ -19,6 +21,7 @@ export const getPosts = async (req, res) => {
       .limit(parseInt(limit));
 
     const total = await postSchema.countDocuments(query);
+console.log(posts);
 
     res.status(200).json({
       posts,
@@ -96,4 +99,31 @@ export const toggleLikePost = (req, res) => {
 
 export const incrementViews = (req, res) => {
   res.send("Get post");
+};
+
+
+export const postComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+console.log(id);
+
+    const post = await postSchema.findById(id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+      if (!post.likes) post.likes = []; // ✅ ensure array
+
+    const isLiked = post.likes.includes(userId);
+
+    if (isLiked) {
+      post.likes.pull(userId);
+    } else {
+      post.likes.push(userId);
+    }
+
+    await post.save();
+    res.json({ likes: post.likes.length, isLiked: !isLiked });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };

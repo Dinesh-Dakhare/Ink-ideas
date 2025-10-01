@@ -100,7 +100,7 @@ const [loading, setLoading] = useState(false);
 useEffect(() => {
   const fetchPosts = async () => {
     try {
-      const res = await getPosts({page,limit:6})
+      const res = await getPosts({page,limit:6,category:selectedCategory === "All" ? "" : selectedCategory});
 
       console.log(res);
       setCurrentPage(res.currentPage)
@@ -113,8 +113,8 @@ useEffect(() => {
   };
 
   fetchPosts();
-}, [filteredPosts === posts.category]);
-if(!posts.length) return <div>Loading...</div>
+}, [selectedCategory]);
+// if(!posts.length) return <div>Loading...</div>
   return (
     <div id="home" className="min-h-screen bg-gray-50">
       {/* Navigation Header */}
@@ -169,10 +169,13 @@ if(!posts.length) return <div>Loading...</div>
           </div>
 
           {/* Category Filter */}
-         <CategoryList categories={categories} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
+         <CategoryList posts={posts} categories={categories} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
 
           {/* Articles Grid */}
           <div id="articles" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+            {
+              !posts?.length && <div className="text-center text-2xl font-bold text-gray-900 mb-4">No Articles Found</div>
+            }
             {posts?.map((post) => (
               <BlogCards post={post} key={post.id} />
             ))}
