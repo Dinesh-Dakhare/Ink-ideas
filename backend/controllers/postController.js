@@ -1,6 +1,7 @@
 import slugify from "slugify";
 import postSchema from "../model/postSchema.js";
 import ImageSchema from "../model/imageSchema.js";
+import { extractImageUrls } from "../middleware/extractImageUrls.js";
 export const getPosts = async (req, res) => {
   try {
     const { category, search, page = 1, limit = 6 } = req.query;
@@ -89,16 +90,51 @@ export const updatePost = (req, res) => {
   res.send("Update post");
 };
 
-export const deletePost = (req, res) => {
-  res.send("Delete post");
+export const deletePost = async(req, res) => {
+const { id } = req.params;
+
+const post = await postSchema.findById(id);
+if(!post) return res.status(404).json({ message: "Post not found" });
+
+try {
+  await postSchema.findByIdAndDelete(id);
+  res.status(200).json({ message: "Post deleted successfully" });
+} catch (error) {
+  res.status(500).json({ message: error.message });
+}
 };
 
 export const toggleLikePost = (req, res) => {
   res.send("Get post");
 };
 
-export const incrementViews = (req, res) => {
-  res.send("Get post");
+export const incrementViews = async (req, res) => {
+try {
+
+  console.log();
+  
+    const postId = req.params.id;
+    const userId = req.user?.id?.toString(); // if logged in
+    const userIp = req.ip; // fallback if not logged in
+
+    const viewerId = userId || userIp;
+
+    const post = await postSchema.findById(postId);
+
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    // Prevent duplicate views from the same user/IP
+    if (!post.viewedBy.includes(viewerId)) {
+      post.views += 1;
+      post.viewedBy.push(viewerId);
+      await post.save();
+    }
+
+    res.status(200).json({ views: post.views });
+  } catch (error) {
+    console.error("Error updating views:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 

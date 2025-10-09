@@ -69,6 +69,7 @@ export default function BlogEditor({ initialContent = "", onSave }) {
         let url = res.data;
 
         editor.chain().focus().setImage({ src: url }).run();
+        navigate("/");
       }
     } catch (err) {
       console.error("Upload failed", err);

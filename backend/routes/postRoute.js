@@ -16,6 +16,6 @@ blog.get("/", getPosts);
  blog.post('/like/:id',protect,postComment)
 // Post actions
  blog.patch("/:id/like", protect, toggleLikePost);
- blog.patch("/:id/view", incrementViews);
+ blog.put("/:id/views", protect,incrementViews);
 
 export default blog;

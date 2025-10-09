@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -27,7 +28,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user,setUser ,login, logout }}>
       {children}
     </UserContext.Provider>
   );

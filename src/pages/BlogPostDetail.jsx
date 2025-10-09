@@ -91,49 +91,42 @@ const BlogPostDetail = () => {
     window.open(shareUrls[platform], "_blank", "width=600,height=400");
   };
 
-  const handleCommentSubmit = async (comment, repliesId) => {
-    if (!comment.trim()) return;
+  
 
-    try {
-      const res = await api.post("/api/v1/comment", {
-        postId: post._id,
-        content: comment,
-        repliesId: repliesId || null,
-      });
-
-      if (res.status === 201) {
-        console.log(res.data);
-        setReloadReplies(!reloadReplies);
-        setComment("");
-        setReplyText("");
-        setRepliesId(null);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleLikeComment = async(id) => {
+  const handleLikeComment = async (id) => {
     try {
       const response = await api.post(`/api/v1/comment/like/${id}`);
       console.log(response.data);
+      setIsLiked(true);
     } catch (error) {
       console.log(error);
-      
     }
   };
 
-const handlePostLike = async () => {
-  try {
-    const response = await api.post(`/api/v1/blogs/like/${post._id}`);
-    console.log(response.data);
-  } catch (error) {
-    console.log(error);
-    
-  }
+  const handlePostLike = async () => {
+    try {
+      const response = await api.post(`/api/v1/blogs/like/${post._id}`);
+      console.log(response.data);
+      setIsLiked(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+const updateViews = async()=>{
+if(!post._id)return;
+try {
+  const res = await api.put(`/api/v1/blogs/${post._id}/views`);
+} catch (error) {
+  console.log(error);
 }
+
+}
+
+
   useEffect(() => {
-    const loadComments = async () => {
+    updateViews();
+        const loadComments = async () => {
       try {
         const res = await api.get(
           `/api/v1/comment/${post._id}?page=${page}&limit=${limit}`
@@ -147,15 +140,17 @@ const handlePostLike = async () => {
       }
     };
     loadComments();
-    setPage(1);
-  }, [post, reloadReplies, page]);
+  }, [post, reloadReplies, page, isLiked]);
 
   return (
     <article className="min-h-screen bg-white">
       {/* Hero Section */}
       <header className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
         <div className="flex items-center gap-2 my-5 ">
-          <NavLink className=" bg-blue-300 p-2 rounded-full  hover:cursor-pointer ">
+          <NavLink
+            to="/"
+            className=" bg-blue-300 p-2 rounded-full  hover:cursor-pointer "
+          >
             <ArrowLeft className="hover:cursor-pointer  " />
           </NavLink>
           <p className="text-xl font-medium">Back</p>
@@ -284,10 +279,10 @@ const handlePostLike = async () => {
             <section className="mt-16">
               <CommentAndReplies
                 comments={comments}
-                comment={comment}
-                setComment={setComment}
+                // comment={comment}
+                // setComment={setComment}
                 setComments={setComments}
-                handleCommentSubmit={handleCommentSubmit}
+                // handleCommentSubmit={handleCommentSubmit}
                 post={post}
                 page={page}
                 setPage={setPage}
@@ -297,6 +292,8 @@ const handlePostLike = async () => {
                 repliesId={repliesId}
                 replyText={replyText}
                 setReplyText={setReplyText}
+                setReloadReplies={setReloadReplies}
+                reloadReplies={reloadReplies}
               />
             </section>
           </main>

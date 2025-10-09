@@ -1,5 +1,10 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import userSchema from "../model/userSchema.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const userRegister = async (req, res) => {
   const { username, email, password } = req.body;
@@ -42,21 +47,36 @@ export const userLogin = async (req, res) => {
 };
 
 export const uploadImg = async (req, res) => {
-  if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+  try {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
+const user = await userSchema.findById(req.user.id);
+  if (!user) return res.status(404).json({ message: "User not found" });
+if(user.avatar){
+  const oldPath = path.join(__dirname, "backend", user.avatar); 
+  if(fs.existsSync(oldPath)){
+    fs.unlinkSync(oldPath);
+    console.log("🗑️ Old avatar deleted:", oldPath);
+  }
+}
   const filePath = `/uploads/avatars/${req.file.filename}`;
+user.avatar = filePath;
 
+await user.save();
   // Save the avatar in user schema
-  const updatedUser = await userSchema.findByIdAndUpdate(
-    req.user.id,
-    { avatar: filePath },
-    { new: true, select: "username email avatar" }
-  );
+  // const updatedUser = await userSchema.findByIdAndUpdate(
+  //   req.user.id,
+  //   { avatar: filePath },
+  //   { new: true, select: "username email avatar" }
+  // );
   return res.status(200).json({
     message: "Avatar uploaded successfully",
-    avatar: updatedUser.avatar,
-    user: updatedUser,
+    avatar: filePath,
   });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+  
 };
 
 

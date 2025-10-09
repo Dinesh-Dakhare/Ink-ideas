@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  FiEdit3,
-  FiPlus,
-} from "react-icons/fi";
+import { Link, NavLink } from "react-router-dom";
+import { FiEdit3, FiPlus } from "react-icons/fi";
 import Header from "../component/Header";
 import Categories from "../component/Categories";
 import QuickActions from "../component/QuickActions";
@@ -13,28 +10,33 @@ import Post from "../component/Post";
 import Setting from "../component/Setting";
 import DashboardCard from "../component/DashboardCard";
 import api from "../services/api.js";
+import DashboardPostList from "../component/DashboardPostList.jsx";
 const UserDashbord = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [recentPosts, setRecentPosts] = useState([]);
-  const[postStats,setPostStats]= useState([])
-useEffect(()=>{
-const handleDashboard = async() => {
-  try {
-    const res = await api.get("/api/v1/dashboard");
-    console.log(res.data);
-    setRecentPosts(res.data.recentPosts);
-    setPostStats(res.data);
-  } catch (error) {
-    console.log(error);
-    
-  }
-}
-handleDashboard()
-},[])
+  const [postStats, setPostStats] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
 
-if(!postStats){
-  return <div>Loading...</div>
-}
+
+
+
+  useEffect(() => {
+    const handleDashboard = async () => {
+      try {
+        const res = await api.get("/api/v1/dashboard");
+        console.log(res.data);
+        setRecentPosts(res.data.recentPosts);
+        setPostStats(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    handleDashboard();
+  }, []);
+
+  if (!postStats) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -43,7 +45,7 @@ if(!postStats){
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation Tabs */}
         <div className="flex space-x-1 mb-8">
-          {["overview",  "settings"].map((tab) => (
+          {["overview", "settings","posts"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -71,10 +73,13 @@ if(!postStats){
                   <p className="text-blue-100 mb-6">
                     You have 3 draft posts and 12 new comments to review.
                   </p>
-                  <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors flex items-center">
+                  <NavLink
+                    to="/blog-editor"
+                    className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors flex items-center w-fit"
+                  >
                     <FiPlus className="w-4 h-4 mr-2" />
                     Create New Post
-                  </button>
+                  </NavLink>
                 </div>
                 <div className="hidden md:block">
                   <FiEdit3 className="w-24 h-24 text-blue-200" />
@@ -83,16 +88,16 @@ if(!postStats){
             </div>
 
             {/* Stats Grid */}
-            <DashboardCard postStats={postStats}/>
+            <DashboardCard postStats={postStats} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Recent Posts */}
-              <RecentBlogs recentPosts={recentPosts} />
+              <RecentBlogs recentPosts={recentPosts}  />
 
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Categories */}
-                <Categories postStats={postStats}/>
+                <Categories postStats={postStats} />
 
                 {/* Quick Actions */}
                 <QuickActions />
@@ -101,10 +106,9 @@ if(!postStats){
           </>
         )}
 
-       
-
         {/* Settings Tab */}
         {activeTab === "settings" && <Setting />}
+        {activeTab === "posts"&& <DashboardPostList/>}
       </div>
     </div>
   );

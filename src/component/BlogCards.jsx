@@ -73,7 +73,7 @@ const BlogCards = ({ post }) => {
               className="flex items-center"
             >
               <FiEye className="w-4 h-4 mr-1" onClick={handleBlogView} />
-              {post.views}
+              {post?.views}
             </NavLink>
             <div className="flex items-center">
               <FiHeart className="w-4 h-4 mr-1" />
@@ -81,7 +81,7 @@ const BlogCards = ({ post }) => {
             </div>
             <div className="flex items-center">
               <FiMessageCircle className="w-4 h-4 mr-1" />
-              {post.comments}
+              {post.comments?.length}
             </div>
           </div>
 

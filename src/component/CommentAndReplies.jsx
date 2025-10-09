@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { MessageCircle, Heart } from "lucide-react";
-import api from "../services/api";
-import { set } from "mongoose";
-
+import { useUser } from "../context/userContext.jsx";
+import api from "../services/api.js";
 const CommentAndReplies = ({
   comments,
-  comment,
-  setComment,
-  handleCommentSubmit,
+  // comment,
+  // setComment,
+  // handleCommentSubmit,
   handleLikeComment,
   replyingTo,
   post,
@@ -21,19 +20,46 @@ const CommentAndReplies = ({
   setRepliesId,
   replyText,
   setReplyText,
+  setReloadReplies,
+  reloadReplies,
 }) => {
+  const [comment, setComment] = useState("");
+  const { user } = useUser();
+
+  const handleCommentSubmit = async (comment, repliesId) => {
+    if (!comment.trim()) return;
+
+    try {
+      const res = await api.post("/api/v1/comment", {
+        postId: post._id,
+        content: comment,
+        repliesId: repliesId || null,
+      });
+
+      if (res.status === 201) {
+        console.log(res.data);
+        setReloadReplies(!reloadReplies);
+        setComment("");
+        setReplyText("");
+        setRepliesId(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
         <MessageCircle className="w-6 h-6" />
-        <span>Comments ({comments.length})</span>
+        <span>Comments ({comments?.length})</span>
       </h3>
 
       {/* New Comment Form */}
       <div className="mb-8">
         <div className="flex space-x-3">
           <img
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop&crop=face"
+            src={`/backend${user?.avatar}`}
             alt="Your avatar"
             className="w-10 h-10 rounded-full object-cover"
           />
@@ -48,7 +74,7 @@ const CommentAndReplies = ({
             <div className="flex justify-end mt-3">
               <button
                 onClick={() => handleCommentSubmit(comment)}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 // disabled={comment.trim() === ''}
               >
                 Post Comment
@@ -74,7 +100,7 @@ const CommentAndReplies = ({
               {/* Main Comment */}
               <div className="flex space-x-3">
                 <img
-                  src={comment?.author?.avatar}
+                  src={`/backend${comment?.author?.avatar}`}
                   alt={comment?.author?.username}
                   className="w-10 h-10 rounded-full object-cover"
                 />
@@ -101,11 +127,11 @@ const CommentAndReplies = ({
                       }`}
                     >
                       <Heart
-                        className={`w-4 h-4 ${
+                        className={`w-4 h-4 cursor-pointer ${
                           comment?.isLiked ? "fill-current" : ""
                         }`}
                       />
-                      <span>{comment?.likes}</span>
+                      <span>{comment?.likes?.length}</span>
                     </button>
                     <button
                       onClick={() =>
@@ -113,7 +139,7 @@ const CommentAndReplies = ({
                           repliesId === comment?._id ? null : comment?._id
                         )
                       }
-                      className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
+                      className="text-sm text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
                     >
                       Reply
                     </button>
@@ -124,7 +150,7 @@ const CommentAndReplies = ({
                     <div className="mt-4 ml-4">
                       <div className="flex space-x-3">
                         <img
-                          src={comment?.author?.avatar}
+                          src={`/backend${comment?.author?.avatar}`}
                           alt={comment?.author?.username}
                           className="w-8 h-8 rounded-full object-cover"
                         />
@@ -167,7 +193,7 @@ const CommentAndReplies = ({
                       {comment?.replies?.map((reply) => (
                         <div key={reply?._id} className="flex space-x-3">
                           <img
-                            src={reply?.author.avatar}
+                            src={`/backend${reply?.author.avatar}`}
                             alt={reply?.author.username}
                             className="w-8 h-8 rounded-full object-cover"
                           />
@@ -188,7 +214,7 @@ const CommentAndReplies = ({
                             </div>
                             <div className="flex items-center space-x-4 mt-1 ml-3">
                               <button
-                                onClick={() => handleLikeComment(comment?._id)}
+                                onClick={() => handleLikeComment(reply?._id)}
                                 className={`flex items-center space-x-1 cursor-pointer text-xs transition-colors ${
                                   reply?.isLiked
                                     ? "text-red-600"
@@ -200,7 +226,7 @@ const CommentAndReplies = ({
                                     reply?.isLiked ? "fill-current" : ""
                                   }`}
                                 />
-                                <span>{reply?.likes}</span>
+                                <span>{reply?.likes?.length}</span>
                               </button>
                             </div>
                           </div>

@@ -183,9 +183,9 @@ useEffect(() => {
 
           {/* Load More Button */}
           <div className="text-center mt-12">
-            <button className="bg-white border border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-medium hover:bg-gray-50 transition-colors">
+            <NavLink to="/all-blogs" className="bg-white border border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-medium hover:bg-gray-50 transition-colors">
               Load More Articles
-            </button>
+            </NavLink >
           </div>
         </div>
       </section>

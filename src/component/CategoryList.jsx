@@ -5,7 +5,7 @@ const CategoryList = ({posts, selectedCategory, setSelectedCategory}) => {
   
   return (
     <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {posts.map((post) => (
+            {posts?.map((post) => (
               <button
                 key={post._id}
                 onClick={() => setSelectedCategory(post.category)}
